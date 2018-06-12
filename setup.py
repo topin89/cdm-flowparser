@@ -64,6 +64,19 @@ if platform.system().lower() == 'linux':
     # statically. The overall size is obviously increased but not dramatically.
     extraLinkArgs = ['-static-libstdc++']
 
+    
+if sys.platform=='win32':
+    extra_compile_args=['/Oy',
+                        '/DCDM_CF_PARSER_VERSION=\\"' + version + '\\"',
+                        '/Ox',
+                        '/DPYCXX_PYTHON_2TO3'
+                       ]
+else:
+    extra_compile_args=['-Wno-unused', '-fomit-frame-pointer',
+                        '-DCDM_CF_PARSER_VERSION="' + version + '"',
+                        '-ffast-math',
+                        '-O2',
+                        '-DPYCXX_PYTHON_2TO3']
 
 # install_requires=['pypandoc'] could be added but really it needs to only
 # at the time of submitting a package to Pypi so it is excluded from the
@@ -130,10 +143,6 @@ setup(name='cdmcfparser',
                                        'thirdparty/pycxx/CXX/Python3/PythonType.hxx',
                                        'thirdparty/pycxx/CXX/Python3/cxx_standard_exceptions.hxx'],
                               include_dirs=['thirdparty/pycxx', 'thirdparty/pycxx/Src', 'src'],
-                              extra_compile_args=['-Wno-unused', '-fomit-frame-pointer',
-                                                  '-DCDM_CF_PARSER_VERSION="' + version + '"',
-                                                  '-ffast-math',
-                                                  '-O2',
-                                                  '-DPYCXX_PYTHON_2TO3'],
+                              extra_compile_args=extra_compile_args,
                               extra_link_args=extraLinkArgs,
                              )])

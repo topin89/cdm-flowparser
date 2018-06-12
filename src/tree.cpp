@@ -33,7 +33,11 @@
 using namespace std;
 
 
-extern grammar _PyParser_Grammar; // From graminit.c
+#if _MSC_VER && !__INTEL_COMPILER  //Intel compiler also defines _MSC_VER for some reason
+extern "C"{extern  __declspec(dllimport) grammar  _PyParser_Grammar;}  /* From graminit.c */
+#else
+extern grammar      _PyParser_Grammar;  /* From graminit.c */
+#endif
 
 
 struct PythonEnvironment

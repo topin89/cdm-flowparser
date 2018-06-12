@@ -25,6 +25,11 @@
 #include <deque>
 #include <string>
 
+#if _MSC_VER && !__INTEL_COMPILER
+    typedef __int3264 ssize_t;    
+#endif
+
+
 
 enum CommentType
 {

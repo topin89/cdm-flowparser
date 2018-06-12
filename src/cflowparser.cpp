@@ -37,7 +37,11 @@
 #include "cflowutils.hpp"
 
 
+#if _MSC_VER && !__INTEL_COMPILER  //Intel compiler also defines _MSC_VER for some reason
+extern "C"{extern  __declspec(dllimport) grammar  _PyParser_Grammar;}  /* From graminit.c */
+#else
 extern grammar      _PyParser_Grammar;  /* From graminit.c */
+#endif
 
 
 static FragmentBase *
@@ -2982,7 +2986,13 @@ Py::Object  parseInput( const char *  buffer, const char *  fileName,
         int         fileCommentFirstLine = 1;
 
         assert( totalLines >= 0 );
-        int                         lineShifts[ totalLines + 1 ];
+        
+        #if _MSC_VER && !__INTEL_COMPILER
+            //MSVC's _alloca works unpredictably, unfortunately.
+            int         *lineShifts=(int *)malloc( (totalLines + 1 )*sizeof(lineShifts[0]) );
+        #else
+            int         lineShifts[ totalLines + 1 ];
+        #endif
         std::deque< CommentLine >   comments;
 
         getLineShiftsAndComments( buffer, lineShifts, comments );
@@ -3061,6 +3071,9 @@ Py::Object  parseInput( const char *  buffer, const char *  fileName,
 
             controlFlow->body = Py::asObject( body );
         }
+        #if _MSC_VER && !__INTEL_COMPILER
+            free(lineShifts);
+        #endif
     }
 
     return Py::asObject( controlFlow );
